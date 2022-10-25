@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 config = OmegaConf.load('configs/mnist.yaml')
 params = config['model']['params']
 
-model = DDPM.load_from_checkpoint('logs/2022-10-25T16-28-36_mnist/checkpoints/epoch=000012.ckpt', strict=False, **params)
+model = DDPM.load_from_checkpoint('logs/2022-10-25T20-18-08_mnist/checkpoints/epoch=000049.ckpt', strict=False, **params)
 # model = DDPM.load_from_checkpoint('logs/2022-10-25T15-04-07_mnist/checkpoints/epoch=000049.ckpt', strict=False, **params)
 # model = DDPM.load_from_checkpoint('logs/2022-10-25T14-57-58_mnist/checkpoints/epoch=000049.ckpt', strict=False, **params)
 model = model.cuda()
