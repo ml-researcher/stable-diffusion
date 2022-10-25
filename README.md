@@ -1,3 +1,13 @@
+# Stable Diffusion for MNIST
+
+正在排查stable-diffusion里的unet存在的问题（训练会崩），现在使用的模型是[denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch)代码里的unet。
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python main.py --base configs/mnist.yaml --train --gpus 0, --scale_lr False
+```
+
+![sample](./sample.png)
+
 # Stable Diffusion
 *Stable Diffusion was made possible thanks to a collaboration with [Stability AI](https://stability.ai/) and [Runway](https://runwayml.com/) and builds upon our previous work:*
 

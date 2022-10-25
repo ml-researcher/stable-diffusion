@@ -1,0 +1,61 @@
+model:
+  base_learning_rate: 1.0e-3
+  target: ldm.models.diffusion.ddpm.DDPM
+  params:
+    image_size: 28
+    channels: 1
+    use_ema: False
+    beta_schedule: cosine
+    unet_config:
+      target: ldm.modules.diffusionmodules.unet.Unet
+      params:
+        channels: 1
+        dim: 64
+        dim_mults:
+        - 1
+        - 2
+        - 4
+      # target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      # params:
+      #   # use_scale_shift_norm: True
+      #   image_size: 28
+      #   in_channels: 1
+      #   out_channels: 1
+      #   model_channels: 64
+      #   attention_resolutions:
+      #   - 4
+      #   - 2
+      #   - 1
+      #   num_res_blocks: 2
+      #   channel_mult:
+      #   - 1
+      #   - 2
+      #   - 4
+      #   num_heads: 4
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 100
+    num_workers: 5
+    wrap: false
+    train:
+      target: ldm.data.mnist.MNIST
+
+
+lightning:
+  modelcheckpoint:
+    params:
+      # every_n_train_steps: 10000
+      save_top_k: -1
+      monitor: null
+  callbacks:
+    image_logger:
+      target: main.ImageLogger
+      params:
+        batch_frequency: 1000
+        max_images: 64
+        increase_log_steps: False
+
+  trainer:
+    benchmark: True
+    # max_epochs: 13

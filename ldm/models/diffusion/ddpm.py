@@ -144,6 +144,10 @@ class DDPM(pl.LightningModule):
         self.register_buffer('sqrt_recip_alphas_cumprod', to_torch(np.sqrt(1. / alphas_cumprod)))
         self.register_buffer('sqrt_recipm1_alphas_cumprod', to_torch(np.sqrt(1. / alphas_cumprod - 1)))
 
+        self.register_buffer('sqrt_rev_alphas', torch.rsqrt(to_torch(alphas)))
+        self.register_buffer('sqrt_rev_one_minus_alphas_cumprod', torch.rsqrt(1. - to_torch(alphas_cumprod)))
+        self.register_buffer('sigma', self.betas*self.sqrt_rev_alphas*self.sqrt_rev_one_minus_alphas_cumprod*1.5)
+
         # calculations for posterior q(x_{t-1} | x_t, x_0)
         posterior_variance = (1 - self.v_posterior) * betas * (1. - alphas_cumprod_prev) / (
                     1. - alphas_cumprod) + self.v_posterior * betas
@@ -247,7 +251,7 @@ class DDPM(pl.LightningModule):
         noise = noise_like(x.shape, device, repeat_noise)
         # no noise when t == 0
         nonzero_mask = (1 - (t == 0).float()).reshape(b, *((1,) * (len(x.shape) - 1)))
-        return model_mean + nonzero_mask * (0.5 * model_log_variance).exp() * noise
+        return model_mean + nonzero_mask * extract_into_tensor(self.sigma, t, x.shape) * noise #+ nonzero_mask * (0.5 * model_log_variance).exp() * noise
 
     @torch.no_grad()
     def p_sample_loop(self, shape, return_intermediates=False):
